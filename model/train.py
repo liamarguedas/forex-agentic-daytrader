@@ -2,12 +2,13 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense
 from ..data import UtilityPipelines
 from transformer import DataTransformer
+from util import save_model
 
 
 def main():
 
     pipeline = UtilityPipelines()
-    data = pipeline.get_lastest_train_data()
+    data = pipeline.get_lastest_data(train=True, fetch_new_data=False)
 
     transformer = DataTransformer(sequence_length=50)
 
@@ -34,6 +35,11 @@ def main():
     history = model.fit(
         X, y, epochs=300, batch_size=31, validation_split=0.2, verbose=2
     )
+
+    save_model(model)
+
+    for key, values in history.history.items():
+        print(f"{key}: {values[-1]}")
 
 
 if __name__ == "__main__":
