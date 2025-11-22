@@ -1,10 +1,11 @@
 from pathlib import Path
 from pydantic import BaseModel
 from .base import AlphaVantage
-from ..config import Pair
+from config import Pair
 import pandas
 
 PATH = Path(__file__).parents[1]
+pair = Pair.load()  # ← load the actual config
 
 
 class UtilityPipelines(BaseModel):
@@ -20,7 +21,7 @@ class UtilityPipelines(BaseModel):
     @staticmethod
     def fetch_new_data():
         data_instance = AlphaVantage(
-            from_pair=Pair.FROM, to_pair=Pair.TO, training_data=False
+            from_pair=pair.FROM, to_pair=pair.TO, training_data=False
         )
         data_instance.get()
 

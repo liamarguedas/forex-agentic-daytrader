@@ -1,11 +1,11 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense
-from ..data import UtilityPipelines
-from transformer import DataTransformer
-from util import save_model
+from data import UtilityPipelines
+from .transformer import DataTransformer
+from .util import save_model
 
 
-def main():
+def train():
 
     pipeline = UtilityPipelines()
     data = pipeline.get_lastest_data(train=True, fetch_new_data=False)

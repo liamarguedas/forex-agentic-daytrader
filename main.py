@@ -1,5 +1,9 @@
+from model import train
+
+
 def main():
-    print("Hello from forex-agentic-trader!")
+
+    train()
 
 
 if __name__ == "__main__":
