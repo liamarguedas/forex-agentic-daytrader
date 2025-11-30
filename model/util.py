@@ -35,7 +35,7 @@ def save_scaler(scaler):
         "%Y%m%d_%H%M%S"
     )
 
-    joblib.dump(scaler, KERAS_PATH / f"{file_name}.pkl")
+    joblib.dump(scaler, SCALER_PATH / f"{file_name}.pkl")
 
 
 def load_latest(load: str):

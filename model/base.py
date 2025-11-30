@@ -6,6 +6,7 @@ from .util import create_string_id, load_latest
 from .transformer import DataTransformer
 from data import UtilityPipelines
 import pandas as pd
+import numpy as np
 from config import ModelConfig
 
 ROOT = Path(__file__).parents[1]
@@ -43,7 +44,7 @@ class Model(BaseModel):
         self.track_prediction(now, self._rule_id, self._pair)
         content.to_csv(file_path)
 
-    def predict_next_month(self) -> pd.DataFrame:
+    def predict_next_month(self, days=30) -> pd.DataFrame:
 
         data = self.fetch_to_predict_data()
 
@@ -54,14 +55,32 @@ class Model(BaseModel):
 
         data_with_time_features = transformer.add_time_features(data)
 
-        data_transformed = transformer.transform(data_with_time_features)
+        data_scaled = transformer.transform(data_with_time_features)
 
-        X_pred = transformer.create_latest_sequence(data_transformed)
-        transformed_prediction = model.predict(X_pred)
-        prediction = transformer.inverse_transform(transformed_prediction)
+        current_sequence = data_scaled[-model_config.SEQUENCE :].copy()
+
+        predictions_scaled, predictions_dates = [], []
+
+        next_date = pd.to_datetime(data["date"]).max() + pd.offsets.BDay(1)
+
+        for _ in range(days):
+
+            X_input = current_sequence.reshape(1, model_config.SEQUENCE, 1)
+
+            next_scaled_value = model.predict(X_input)[0][0]
+
+            predictions_scaled.append(next_scaled_value)
+            predictions_dates.append(next_date)
+
+            current_sequence = np.append(current_sequence[1:], next_scaled_value)
+
+            next_date += pd.offsets.BDay(1)
+
+        predictions_scaled = np.array(predictions_scaled).reshape(-1, 1)
+        final_predictions = transformer.inverse_transform(predictions_scaled)
 
         prediction_df = transformer.create_predictions_dataframe(
-            prediction, data["date"]
+            final_predictions, predictions_dates
         )
 
         self._save_rule_prediction(prediction_df)

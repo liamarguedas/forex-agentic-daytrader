@@ -11,10 +11,9 @@ class DataTransformer(BaseModel):
 
     @staticmethod
     def create_predictions_dataframe(prediction: np.ndarray, date):
-        next_date = date.max() + pd.offsets.BDay(1)
         prediction_df = pd.DataFrame(
-            {"date": [next_date], "predicted_close": prediction.flatten()}
-        )
+            {"date": date, "predicted_close": prediction.flatten()}
+        ).set_index("date")
         return prediction_df
 
     def add_time_features(self, data: pd.DataFrame) -> pd.DataFrame:
