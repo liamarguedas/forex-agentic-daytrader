@@ -1,1 +1,1 @@
-from .forex import Pair
+from .loaders import Pair, ModelConfig

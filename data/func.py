@@ -5,7 +5,7 @@ from config import Pair
 import pandas
 
 PATH = Path(__file__).parents[1]
-pair = Pair.load()  # ← load the actual config
+pair = Pair.load()  # load the actual config
 
 
 class UtilityPipelines(BaseModel):
